@@ -16,7 +16,7 @@ please make sure you add `I/O management API` in console and choose `publish-eve
 
 
 ### Register the App as Event Provider
-Now we use cli to register the app as event provider, we need to install the Adobe I/O event ClI plugin, simply run below:
+Now we use cli to register the app as event provider, we need to install the Adobe I/O event cli plugin, simply run below:
 ```bash
 npm install -g @adobe/aio-cli-plugin-events
 ``` 
@@ -27,9 +27,9 @@ and then follow below codelab step by step:
 Now we can set up fire event by follow [this](https://adobeio-codelabs-custom-events-adobedocs.project-helix.page/?src=/lessons/lesson3.html) and make sure that you choose journaling API as the way to consume events by follow [this](https://adobeio-codelabs-custom-events-adobedocs.project-helix.page/?src=/lessons/lesson4.html)
 
 ### Scheduling cron jobs with alarms
-Follow this codelab to make the firing event automatically by using runtime alarms package [this](https://adobeio-codelabs-alarms-adobedocs.project-helix.page/?src=/README.html)
+Follow this codelab to automatically fire event by using runtime alarms package [Scheduling Cron Jobs with Alarms](https://adobeio-codelabs-alarms-adobedocs.project-helix.page/?src=/README.html)
 
-Your manifest file should look the same as below.
+Your manifest file should look like this as below.
 ```bash
 packages:
   __APP_PACKAGE__:
@@ -64,6 +64,6 @@ packages:
 
 In order to test the action, you could execute `aio app deploy` in the VSCode terminal. Once the deployment is finished, run `aio rt action invoke your-app-name/generic`, and then verify its result and logs using `aio rt activation get ID` and `aio rt activation logs ID`
 
-If successful, the event provider should automatically send the events, you should be able to use postman or curl to verify the journaling API to receive the event. 
+If successful, the event provider should automatically send the events, you should be able to use postman or curl to verify the journaling API to receive events. 
 
 Next lesson: [lesson2](lesson2.md)
