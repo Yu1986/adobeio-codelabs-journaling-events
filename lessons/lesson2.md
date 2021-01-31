@@ -1,129 +1,61 @@
-## Lesson 2: Write your app
+## Lesson 2: Create the Event Consumer using Journaling API
 
-# H1
-## H2
-### H3
-#### H4
-##### H5
-###### H6
+In this lesson, we will do the follow steps:
+- Create an event consumer using Project Firefly template
+- Use [aio-lib-state](https://github.com/adobe/aio-lib-state) as storage library to store the events from journaling api
+- Scheduling cron jobs with alarms to trigger event consumer to pull event from journaling api every x mins
 
-Emphasis, aka italics, with *asterisks* or _underscores_.
+### Create an event consumer using Project Firefly template
+As we have mentioned in lesson 1, we will use the same way to create consumer by follow [here](https://adobeio-codelabs-custom-events-adobedocs.project-helix.page/?src=/lessons/lesson1.html) make sure you use [Journaling API](https://www.adobe.io/apis/experienceplatform/events/docs.html#!adobedocs/adobeio-events/master/api/journaling_api.md) to consume events 
 
-Strong emphasis, aka bold, with **asterisks** or __underscores__.
+For enterprise developers, Adobe offers journaling to consume events. The Adobe I/O Events Journaling API enables enterprise integrations to consume events according to their own cadence and process them in bulk. Unlike webhooks, no additional registration or other configuration is required; every enterprise integration that is registered for events is automatically enabled for journaling. Journaling data is retained for 7 days.
 
-Combined emphasis with **asterisks and _underscores_**.
+After you fire event, you should be able to verify your event through journaling UNIQUE API ENDPOINT you get from console by follow below instruction Journaling api you could use Curl command or POSTMAN to call this journaling UNIQUE API ENDPOINT to see your fired event. Or you can use [Custom Event SDK](https://github.com/adobe/aio-lib-events) to call Journaling API to retrieve your event.
 
-Strikethrough uses two tildes. ~~Scratch this.~~
 
-1. First ordered list item
-2. Another item
-⋅⋅* Unordered sub-list. 
-1. Actual numbers don't matter, just that it's a number
-⋅⋅1. Ordered sub-list
-4. And another item.
+### Write the data into Firefly storage
+We will use [aio-lib-state](https://github.com/adobe/aio-lib-state) to store the event from journaling api. So first we’re going to install the dependency with:
+```bash
+npm i --save @adobe/aio-lib-state
+``` 
+Then we're going to import it as well:
+```bash
+javascript const stateLib = require('@adobe/aio-lib-state');
+``` 
+We'll setup the write to storage inside the main function. 
+```bash
+async function saveToDb(params, new_events) {
+  const stateCLient = await State.init()
 
-⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
 
-⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
-⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
-⋅⋅⋅(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
+  var events = await stateCLient.get(params.db_event_key) 
+  if (events === undefined) {
+    events = {latest: new_events[new_events.length - 1], events: new_events}
+  } else {
+    events = events.value
+    events.latest = new_events[new_events.length - 1]
+    events.events.push(new_events)
+  }
+  await stateCLient.put(params.db_event_key, events, { ttl: -1 })
+}
+``` 
+also we will write down the event postion to ensure that if this action fails, the next invocation will retrieve from the same index instead of the new one. Thus no events are lost.
+```bash
+async function getLatestEventPosition(params) {
+  const stateCLient = await State.init()
+  const events = await stateCLient.get(params.db_event_key)
+  if (events === undefined) {
+    return undefined
+  } else {
+    return events.value.latest.position
+  }
+}
+``` 
+the source code is [here](https://github.com/AdobeDocs/adobeio-samples-journaling-events/blob/main/event-consumer/actions/event_consumer/index.js)
 
-* Unordered list can use asterisks
-- Or minuses
-+ Or pluses
+### Scheduling cron jobs to automate the consuming events
+Same steps as in lesson 2 to scheduling cron jobs to make sure the consumer pulling events from journaling api every x mins. 
 
-[I'm an inline-style link](https://www.google.com)
+Now we can deploy this event consumer app in another runtime namespace. 
 
-[I'm an inline-style link with title](https://www.google.com "Google's Homepage")
-
-[I'm a reference-style link][Arbitrary case-insensitive reference text]
-
-[I'm a relative reference to a repository file](../blob/master/LICENSE)
-
-[You can use numbers for reference-style link definitions][1]
-
-Or leave it empty and use the [link text itself].
-
-URLs and URLs in angle brackets will automatically get turned into links. 
-http://www.example.com or <http://www.example.com> and sometimes 
-example.com (but not on Github, for example).
-
-Some text to show that the reference links can follow later.
-
-[arbitrary case-insensitive reference text]: https://www.mozilla.org
-[1]: http://slashdot.org
-[link text itself]: http://www.reddit.com
-
-![adobe](assets/adobe.png)
-
-Inline `code` has `back-ticks around` it.
-
-```javascript
-var s = "JavaScript syntax highlighting";
-alert(s);
-```
- 
-```python
-s = "Python syntax highlighting"
-print s
-```
- 
-```
-No language indicated, so no syntax highlighting. 
-But let's throw in a <b>tag</b>.
-```
-
-Colons can be used to align columns.
-
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
-
-There must be at least 3 dashes separating each header cell.
-The outer pipes (|) are optional, and you don't need to make the 
-raw Markdown line up prettily. You can also use inline Markdown.
-
-Markdown | Less | Pretty
---- | --- | ---
-*Still* | `renders` | **nicely**
-1 | 2 | 3
-
-> Blockquotes are very handy in email to emulate reply text.
-> This line is part of the same quote.
-
-Quote break.
-
-> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote. 
-
-<dl>
-  <dt>Definition list</dt>
-  <dd>Is something people use sometimes.</dd>
-
-  <dt>Markdown in HTML</dt>
-  <dd>Does *not* work **very** well. Use HTML <em>tags</em>.</dd>
-</dl>
-
-Three or more...
-
----
-
-Hyphens
-
-***
-
-Asterisks
-
-___
-
-Underscores
-
-Here's a line for us to start with.
-
-This line is separated from the one above by two newlines, so it will be a *separate paragraph*.
-
-This line is also a separate paragraph, but...
-This line is only separated by a single newline, so it's a separate line in the *same paragraph*.
-
-Next lesson: [Well done](welldone.md)
+Next lesson: [Lesson3](lesson3.md)
