@@ -1,29 +1,28 @@
-# Adobe I/O CodeLabs template
+# Consume Events using Journaling API
 
-## Getting started 
+This codelab will guide you through creating cron jobs in a Firefly application to consume events using jouranling API
 
-Click on the "Use this template" button to copy the template to your namespace. 
+## User Story
+There is a class of Firefly apps in which customers want guarantees that the I/O Events are processed without losing any event especially 
+when there is a surge of events, a runtime webhook would return 429 response beyond the concurrency limit, thereby causing the webhook to be 
+marked unreachable and causing no further events to be delivered. In this use case, the journaling API of custom events would be useful here. 
 
-The codelab entry point is the [README](README.md). You can put your codelab content including assets under the [lessons](/lessons) directory. The codelab [manifest.json](manifest.json) holds the navigation information and more. Link your lessons in that file in order to render the navigation.
+## Solution
+- Using [Journaling API](https://www.adobe.io/apis/experienceplatform/events/docs.html#!adobedocs/adobeio-events/master/api/journaling_api.md) to retrieve the events instead of relying on the webhook approach.
+- Use a runtime action that uses the [Alarm package](https://adobeio-codelabs-alarms-adobedocs.project-helix.page/?src=/README.html) to read the events every X minutes.
+- The alarm action stores the events in the Firefly storage [aio-lib-state](https://github.com/adobe/aio-lib-state).
+- Index of events has been recorded in storage that if the action fails, the next invocation will retrieve from the same index, thus no events are lost.
 
-## Preview codelab locally
+In order to demo how to using journaling API to consume events, we provide an end to end solution in this codelab, 
+- Event provider - we need to create an event provider to automatically generate events sending to Jouranling API or if you already have event provider you could skip this step
+- Event consumer - which is the main demo part of this codelab, we create another Project Firefly headless app to create cron jobs with alarms, we set up recurring jobs to pull from journalling API every x mins and write into project firefly storage.
 
-The template codelab is based on the Project Helix https://www.project-helix.io/. Follow instructions as explained.
+Event provider and event consumer both need to be deployed as a Project Firefly app under different namespace to make sure end to end workflow.
+So for that purpose, you may need to create two projects at Console follow below:
+[Creating your First Project Firefly Application](https://github.com/AdobeDocs/project-firefly/blob/master/getting_started/first_app.md)
 
-`npm i -g @adobe/helix-cli && hlx up` is enough to get you started. Make sure to have at least `npm@6.14.x` installed and an initial commit. 
+If successfully set up, you should be able to see your event consumer will periodically pull events from journaling API and write into storage.
+For your convenience, we provide a complete solution of this codelab at [here](https://github.com/AdobeDocs/adobeio-samples-journaling-events)
 
-## Share codelab URL
-
-You can visit https://[REPO_NAME]-[REPO_OWNER].project-helix.page to see it running.
-
-Demo: https://adobeio-codelabs-template-adobedocs.project-helix.page/ 
-
-Make sure to push your changes before sharing the URL.
-
-## Contribute to Adobe I/O CodeLabs
-
-Once your codelab is ready, submit a PR to add it to the index at https://github.com/AdobeDocs/adobeio-codelabs/blob/gh-pages/actions/index.json  
-
-
-
+Next: [Requirements](/lessons/requirements.md).
   

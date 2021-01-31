@@ -1,5 +1,5 @@
 {
-  "title": "CodeLab title",
+  "title": "Consume Events using Journaling API",
   "repository": "https://github.com/AdobeDocs/adobeio-codelabs-template",
   "navigation": [{
     "title": "Introduction",
@@ -8,11 +8,14 @@
     "title": "Requirements",
     "url": "/lessons/requirements"
   }, {
-    "title": "Lesson 1: Bootstrap your app",
+    "title": "Lesson 1: Create an Event Provider using Firefly",
     "url": "/lessons/lesson1"
   }, {
-    "title": "Lesson 2: Write your app",
+    "title": "Lesson 2: Create the Event Consumer using Journaling API",
     "url": "/lessons/lesson2"
+  }, {
+    "title": "Lesson 3: End to end test",
+    "url": "/lessons/lesson3"
   }, {
     "title": "Well done",
     "url": "/lessons/welldone"

@@ -17,8 +17,11 @@ If not already done, you should follow the below links to have your environment 
 
 ### Codelab environment
 
-In addition to above pre-requisites, you'll need:
+In addition to above pre-requisites, you'll need to read through the below docs to get yourself familiar with custom event, how to scheduling cron jobs with alarms, Adobe I/O Events CLI Plugin, and journaling API: 
 
-* A
-* B
-* C
+* [Getting Started with Adobe I/O Custom Events](https://adobeio-codelabs-custom-events-adobedocs.project-helix.page/?src=/README.html)
+* [Setting up Your Environment](https://adobeio-codelabs-alarms-adobedocs.project-helix.page/?src=/README.html)
+* [Adobe I/O Events CLI Plugin](https://github.com/adobe/aio-cli-plugin-events)
+* [Journaling API](https://www.adobe.io/apis/experienceplatform/events/docs.html#!adobedocs/adobeio-events/master/api/journaling_api.md)
+
+[Start the first lesson](/lessons/lesson1.md).
